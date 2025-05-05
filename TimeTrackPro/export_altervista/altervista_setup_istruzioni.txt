@@ -1,0 +1,68 @@
+# Istruzioni per l'installazione su Altervista
+
+## File necessari da caricare su Altervista
+
+Per caricare il progetto su Altervista, segui questi passaggi:
+
+1. **Carica tutti i file del progetto tramite FTP**
+   - Collega il tuo client FTP (come FileZilla) al tuo spazio Altervista
+   - Carica tutti i file e le cartelle del progetto nella directory principale
+
+2. **File da modificare dopo il caricamento**
+   - `.htaccess`: Modifica le variabili d'ambiente con le tue credenziali di database
+   - Nel pannello di controllo di Altervista, attiva Python (se non è già attivo)
+
+## Database PostgreSQL su Altervista
+
+1. **Crea il database PostgreSQL**
+   - Accedi al pannello di controllo di Altervista
+   - Vai alla sezione "Database" e crea un nuovo database PostgreSQL
+   - Annota le credenziali (saranno necessarie per configurare l'applicazione)
+
+2. **Inizializza il database**
+   - Usa phpPgAdmin o un altro strumento fornito da Altervista
+   - Esegui lo script SQL contenuto nel file `schema.sql`
+
+## Cartella `lib`
+
+La cartella `lib` è destinata alle librerie Python. In un ambiente condiviso come Altervista, potrebbe essere necessario installare alcune librerie localmente:
+
+```bash
+pip install -t ./lib pillow qrcode pyotp flask flask-sqlalchemy flask-login flask-wtf psycopg2-binary xlsxwriter
+```
+
+## Configurazione del file `.htaccess`
+
+Assicurati di modificare il file `.htaccess` con le tue credenziali di database e una chiave segreta:
+
+```
+SetEnv FLASK_APP main.py
+SetEnv FLASK_ENV production
+SetEnv DATABASE_URL postgresql://username:password@localhost/database_name
+SetEnv SECRET_KEY una_chiave_segreta_molto_lunga_e_complessa
+
+# Configurazione per Python
+AddHandler fcgid-script .py
+Options +ExecCGI
+```
+
+## Problemi comuni
+
+1. **Errore 500 (Internal Server Error)**
+   - Controlla i log di errore nel pannello di controllo di Altervista
+   - Verifica che tutte le dipendenze siano installate correttamente
+   - Assicurati che le credenziali del database siano corrette
+
+2. **Pagina bianca**
+   - Potrebbe essere un problema con il modulo Python di Altervista
+   - Controlla che Python sia attivato nel pannello di controllo
+   - Verifica che il file `passenger_wsgi.py` sia presente e corretto
+
+3. **Problemi di connessione al database**
+   - Verifica che il database PostgreSQL sia stato creato correttamente
+   - Controlla che le credenziali nel file `.htaccess` siano corrette
+   - Assicurati che l'utente del database abbia i permessi necessari
+
+---
+
+Per ulteriori dettagli, consulta il file `deploy_altervista.md`.

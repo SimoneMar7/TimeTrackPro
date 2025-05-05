@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}Configurazione 2FA - Tempi APM Admin{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h3 class="h4 mb-0">
+                    <i class="fas fa-qrcode me-2"></i>Configurazione Autenticazione a Due Fattori
+                </h3>
+            </div>
+            <div class="card-body">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Importante:</strong> Questa configurazione è necessaria per l'accesso amministratore. Una volta completata, sarà richiesto un codice OTP ad ogni login.
+                </div>
+                
+                <p>Segui questi passaggi per configurare l'autenticazione a due fattori:</p>
+                
+                <ol class="mb-4">
+                    <li class="mb-2">Scarica l'app <strong>Google Authenticator</strong> sul tuo smartphone.</li>
+                    <li class="mb-2">Scansiona il codice QR qui sotto con l'app.</li>
+                    <li class="mb-2">In alternativa, inserisci manualmente questo codice: <strong>{{ secret }}</strong></li>
+                </ol>
+                
+                <div class="text-center mb-4">
+                    <img src="data:image/png;base64,{{ qr_code }}" alt="QR Code per l'autenticazione a due fattori" class="img-fluid border" style="max-width: 250px;">
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('admin_verify_otp') }}" class="btn btn-danger">
+                        <i class="fas fa-check-circle me-2"></i>Ho configurato l'app, procedi alla verifica
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
