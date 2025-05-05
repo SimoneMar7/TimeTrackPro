@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+
+{% block title %}Configurazione 2FA - Form Tempi APM{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h2 class="h4 mb-0">
+                    <i class="fas fa-shield-alt me-2"></i>Autenticazione a Due Fattori (2FA)
+                </h2>
+            </div>
+            <div class="card-body">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        {% if current_user.otp_enabled %}
+                            <div class="alert alert-success">
+                                <i class="fas fa-check-circle me-2"></i>L'autenticazione a due fattori è attualmente <strong>attiva</strong> per il tuo account.
+                            </div>
+                            
+                            <div class="card mb-3">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Disattiva 2FA</h5>
+                                </div>
+                                <div class="card-body">
+                                    <p>Se desideri disattivare l'autenticazione a due fattori, inserisci la tua password e conferma:</p>
+                                    
+                                    <form method="post" action="{{ url_for('disable_otp') }}">
+                                        <div class="mb-3">
+                                            <label for="password" class="form-label">Password</label>
+                                            <input type="password" class="form-control" id="password" name="password" required>
+                                        </div>
+                                        
+                                        <div class="d-grid">
+                                            <button type="submit" class="btn btn-danger">
+                                                <i class="fas fa-times-circle me-2"></i>Disattiva 2FA
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle me-2"></i>L'autenticazione a due fattori è attualmente <strong>disattivata</strong> per il tuo account.
+                            </div>
+                            
+                            <div class="mb-4">
+                                <h4>Come configurare Google Authenticator</h4>
+                                <ol>
+                                    <li>Scarica l'app Google Authenticator sul tuo smartphone</li>
+                                    <li>Apri l'app e scansiona il codice QR qui a fianco</li>
+                                    <li>Inserisci il codice a 6 cifre generato dall'app nel modulo qui sotto</li>
+                                    <li>Clicca su "Attiva 2FA" per completare la configurazione</li>
+                                </ol>
+                            </div>
+                            
+                            <form method="post" action="{{ url_for('configure_otp') }}">
+                                <div class="mb-3">
+                                    <label for="otp_code" class="form-label">Codice di Verifica</label>
+                                    <input type="text" class="form-control" id="otp_code" name="otp_code" placeholder="123456" required autofocus>
+                                    <div class="form-text">Inserisci il codice a 6 cifre mostrato nell'app Google Authenticator.</div>
+                                </div>
+                                
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="fas fa-check-circle me-2"></i>Attiva 2FA
+                                    </button>
+                                </div>
+                            </form>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="col-md-6 text-center">
+                        {% if not current_user.otp_enabled %}
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Codice QR</h5>
+                                </div>
+                                <div class="card-body">
+                                    <img src="data:image/png;base64,{{ qr_code }}" alt="QR Code per Google Authenticator" class="img-fluid">
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h5 class="card-title text-center">2FA Attivo</h5>
+                                    <div class="py-4 text-center">
+                                        <i class="fas fa-shield-alt fa-5x text-success"></i>
+                                    </div>
+                                    <p class="card-text">Il tuo account è protetto con autenticazione a due fattori.</p>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}Verifica Codice 2FA - Form Tempi APM{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6 mx-auto">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h2 class="h4 mb-0">
+                    <i class="fas fa-shield-alt me-2"></i>Verifica Codice 2FA
+                </h2>
+            </div>
+            <div class="card-body">
+                {% if error %}
+                    <div class="alert alert-danger">
+                        {{ error }}
+                    </div>
+                {% endif %}
+                
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>Per completare l'accesso, inserisci il codice di verifica generato dall'app Google Authenticator.
+                </div>
+                
+                <form method="post" action="{{ url_for('verify_otp') }}">
+                    <div class="mb-3">
+                        <label for="otp_code" class="form-label">Codice di Verifica</label>
+                        <input type="text" class="form-control" id="otp_code" name="otp_code" placeholder="123456" required autocomplete="off" autofocus>
+                        <div class="form-text">Inserisci il codice a 6 cifre mostrato nell'app Google Authenticator.</div>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-check-circle me-2"></i>Verifica
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="mt-3 text-center">
+                    <form method="post" action="{{ url_for('cancel_login') }}">
+                        <button type="submit" class="btn btn-link">Annulla e torna al login</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

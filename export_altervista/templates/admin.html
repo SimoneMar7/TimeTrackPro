@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block title %}Pannello Amministratore - Form Tempi APM{% endblock %}
+
+{% block content %}
+<div class="card mb-4">
+    <div class="card-header bg-danger text-white">
+        <h2 class="h4 mb-0">
+            <i class="fas fa-users-cog me-2"></i>Pannello Amministratore
+        </h2>
+    </div>
+    
+    <div class="card-body">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <h4 class="mb-4">Gestione Utenti</h4>
+        
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Cognome</th>
+                        <th>Email</th>
+                        <th>Password</th>
+                        <th>2FA Attivo</th>
+                        <th>Azioni</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for utente in utenti %}
+                        <tr>
+                            <td>{{ utente.id }}</td>
+                            <td>{{ utente.nome }}</td>
+                            <td>{{ utente.cognome }}</td>
+                            <td>{{ utente.email }}</td>
+                            <td>
+                                {% if utente.password_chiaro %}
+                                    <code>{{ utente.password_chiaro }}</code>
+                                {% else %}
+                                    <code class="text-muted">(hash: {{ utente.password_hash[:20] }}...)</code>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if utente.otp_enabled %}
+                                    <span class="badge bg-success">Attivo</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Disattivato</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="d-flex gap-2">
+                                    <form method="post" action="{{ url_for('admin_reset_password') }}" 
+                                          onsubmit="return confirm('Sicuro di voler resettare la password per {{ utente.nome }} {{ utente.cognome }}?')">
+                                        <input type="hidden" name="user_id" value="{{ utente.id }}">
+                                        <button type="submit" class="btn btn-warning btn-sm">
+                                            <i class="fas fa-key"></i> Reset Password
+                                        </button>
+                                    </form>
+                                    
+                                    <form method="post" action="{{ url_for('admin_delete_user') }}" 
+                                          onsubmit="return confirm('ATTENZIONE: Eliminare l\'utente {{ utente.nome }} {{ utente.cognome }} e tutti i suoi dati?')">
+                                        <input type="hidden" name="user_id" value="{{ utente.id }}">
+                                        <button type="submit" class="btn btn-danger btn-sm">
+                                            <i class="fas fa-trash-alt"></i> Elimina
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="mt-4">
+            <a href="{{ url_for('index') }}" class="btn btn-primary">
+                <i class="fas fa-arrow-left me-2"></i>Torna alla Home
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
